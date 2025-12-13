@@ -1,9 +1,8 @@
-// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute"; // ✅ CUKUP SATU AJA
 
 // Import Halaman
 import Home from "./pages/home";
@@ -12,6 +11,8 @@ import CarList from "./pages/carlist";
 import AdminDashboard from "./pages/admindashboard";
 import CarDetail from "./pages/CarDetail";
 import Register from "./pages/user/Registers";
+import MyBookings from "./pages/MyBookings"; // ✅ Sudah benar (di luar folder user)
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -27,11 +28,15 @@ function App() {
             <Route path="/cars" element={<CarList />} />
             <Route path="/cars/:id" element={<CarDetail />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            
+            {/* Route User (Sekarang Aman) */}
+            <Route path="/my-bookings" element={<MyBookings />} />
 
             {/* Route Khusus Admin */}
-              <Route element={<ProtectedRoute roles={['admin']} />}>
-                  <Route path="/admin" element={<AdminDashboard />} /> {/* <--- Pastikan sudah diimport */}
-              </Route>
+            <Route element={<ProtectedRoute roles={['admin']} />}>
+                  <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
 
           </Routes>
         </div>

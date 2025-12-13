@@ -1,5 +1,4 @@
-import React from "react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,35 +17,31 @@ export default function Navbar() {
         RENTAL<span className="text-white">COY</span>
       </h1>
 
-      <div className="space-x-4">
-        <Link to="/" className="hover:text-neon transition">
-          Home
-        </Link>
-        <Link to="/cars" className="hover:text-neon transition">
-          Cars
-        </Link>
+      <div className="space-x-4 flex items-center">
+        <Link to="/" className="hover:text-neon transition">Home</Link>
+        <Link to="/cars" className="hover:text-neon transition">Cars</Link>
 
         {user ? (
           <>
-            <span className="text-gray-400">Hi, {user.name}</span>
+            {/* 👇 INI UDAH BERSIH TANPA FOTO, CUMA LINK KE PROFILE 👇 */}
+            <Link to="/profile" className="text-gray-300 hover:text-white transition font-bold">
+              Hi, {user.name}
+            </Link>
+
+            <Link to="/my-bookings" className="text-white hover:text-neon text-sm font-bold transition">
+                MY BOOKINGS
+            </Link>
+
             {user.role === "admin" && (
-              <Link to="/admin" className="text-neon">
-                Dashboard
-              </Link>
+              <Link to="/admin" className="text-neon">Dashboard</Link>
             )}
 
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 px-4 py-1 rounded"
-            >
+            <button onClick={handleLogout} className="bg-red-600 px-4 py-1 rounded hover:bg-red-700 transition">
               Logout
             </button>
           </>
         ) : (
-          <Link
-            to="/login"
-            className="bg-neon text-black px-6 py-2 rounded-full font-bold hover:bg-white transition"
-          >
+          <Link to="/login" className="bg-neon text-black px-6 py-2 rounded-full font-bold hover:bg-white transition">
             Login
           </Link>
         )}
