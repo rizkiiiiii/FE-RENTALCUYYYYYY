@@ -20,6 +20,7 @@ export default function Navbar() {
       <div className="space-x-4 flex items-center">
         <Link to="/" className="hover:text-neon transition">Home</Link>
         <Link to="/cars" className="hover:text-neon transition">Cars</Link>
+        <Link to="/about" className="hover:text-neon transition">About Us</Link>
 
         {user ? (
           <>

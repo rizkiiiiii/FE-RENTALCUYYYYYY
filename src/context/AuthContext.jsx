@@ -8,14 +8,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
       api
         .get("/user")
         .then((res) => setUser(res.data))
         .catch(() => {
-          sessionStorage.removeItem("token");
+          localStorage.removeItem("token");
           setUser(null);
         })
         .finally(() => setLoading(false));
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post("/login", { email, password });
 
-      sessionStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
 
       return res.data;
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     api.post("/logout").finally(() => {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
       setUser(null);
     });
   };

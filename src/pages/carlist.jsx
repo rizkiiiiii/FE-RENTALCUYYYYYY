@@ -4,21 +4,21 @@ import api from "../api/axios";
 
 export default function CarList() {
     const [cars, setCars] = useState([]);
-    const [filteredCars, setFilteredCars] = useState([]); 
+    const [filteredCars, setFilteredCars] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     // State fitur Search & Filter
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("latest");
 
     const apiUrl = import.meta.env.VITE_API_URL;
-    const baseUrl = apiUrl ? apiUrl.replace('/api', '') : 'http://127.0.0.1:8000';
+    const baseUrl = (apiUrl && apiUrl.trim() !== "") ? apiUrl.replace('/api', '') : 'http://127.0.0.1:8000'; // Fallback aman
 
     // 👇 FUNGSI PENTING: Penyelamat Error "Objects are not valid"
     const getBrandName = (car) => {
         // Kalau brand-nya berupa Object (Data lengkap dari database), ambil 'name'-nya aja
         if (car.brand && typeof car.brand === 'object') {
-            return car.brand.name; 
+            return car.brand.name;
         }
         // Kalau cuma tulisan biasa, langsung balikin
         return car.brand || 'Unknown';
@@ -42,8 +42,8 @@ export default function CarList() {
 
         // 1. Filter Search (Pakai helper getBrandName biar aman)
         if (searchTerm) {
-            result = result.filter(car => 
-                car.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            result = result.filter(car =>
+                car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 getBrandName(car).toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
@@ -65,7 +65,7 @@ export default function CarList() {
     return (
         <div className="pt-24 px-6 min-h-screen bg-darkbg text-white">
             <div className="max-w-6xl mx-auto">
-                
+
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-800 pb-4">
                     <div>
                         <h1 className="text-4xl font-black uppercase">
@@ -76,9 +76,9 @@ export default function CarList() {
 
                     <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0 w-full md:w-auto">
                         <div className="relative group">
-                            <input 
-                                type="text" 
-                                placeholder="Search car name..." 
+                            <input
+                                type="text"
+                                placeholder="Search car name..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="bg-black/50 border border-gray-600 text-white px-4 py-2 pl-10 rounded-lg focus:outline-none focus:border-neon transition w-full md:w-64"
@@ -89,7 +89,7 @@ export default function CarList() {
                         </div>
 
                         <div className="relative">
-                            <select 
+                            <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="bg-black/50 border border-gray-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-neon transition appearance-none pr-8 cursor-pointer"
@@ -105,7 +105,7 @@ export default function CarList() {
                 {filteredCars.length === 0 ? (
                     <div className="text-center py-20 bg-gray-900/50 rounded-xl border border-dashed border-gray-700">
                         <h2 className="text-2xl font-bold text-gray-500">SYSTEM ALERT: No Units Found</h2>
-                        <button onClick={() => {setSearchTerm(''); setSortBy('latest');}} className="mt-4 text-neon hover:underline">Reset Filter</button>
+                        <button onClick={() => { setSearchTerm(''); setSortBy('latest'); }} className="mt-4 text-neon hover:underline">Reset Filter</button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
@@ -113,9 +113,9 @@ export default function CarList() {
                             <div key={car.id} className="bg-cardbg border border-gray-800 rounded-xl overflow-hidden hover:border-neon transition-all duration-300 group">
                                 <div className="h-48 overflow-hidden relative">
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition z-10"></div>
-                                    <img 
-                                        src={`${baseUrl}/storage/${car.image}`} 
-                                        alt={car.name} 
+                                    <img
+                                        src={`${baseUrl}/storage/${car.image}`}
+                                        alt={car.name}
                                         className="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"
                                         onError={(e) => { e.target.src = "https://via.placeholder.com/300x200?text=No+Image"; }}
                                     />
@@ -124,13 +124,13 @@ export default function CarList() {
                                         {getBrandName(car)}
                                     </span>
                                 </div>
-                                
+
                                 <div className="p-6">
                                     <h2 className="text-2xl font-bold italic mb-1">{car.name}</h2>
                                     <p className="text-neon text-lg font-bold mb-4">
                                         Rp {parseInt(car.price_per_day).toLocaleString()} <span className="text-sm text-gray-400 font-normal">/ day</span>
                                     </p>
-                                    
+
                                     <Link to={`/cars/${car.id}`} className="block text-center bg-white text-black font-bold py-2 rounded hover:bg-neon hover:shadow-[0_0_15px_rgba(204,255,0,0.6)] transition-all">
                                         RENT NOW ➔
                                     </Link>

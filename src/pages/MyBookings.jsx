@@ -84,7 +84,7 @@ export default function MyBookings() {
     const [loading, setLoading] = useState(true);
 
     const apiUrl = import.meta.env.VITE_API_URL;
-    const baseUrl = apiUrl ? apiUrl.replace('/api', '') : 'http://127.0.0.1:8000';
+    const baseUrl = (apiUrl && apiUrl.trim() !== "") ? apiUrl.replace('/api', '') : 'http://127.0.0.1:8000'; // Fallback aman
 
     useEffect(() => {
         fetchBookings();
@@ -131,7 +131,7 @@ export default function MyBookings() {
 
     return (
         <div className="pt-24 px-6 min-h-screen bg-darkbg text-white relative overflow-hidden">
-             {/* Inject CSS Glitch tadi ke dalam halaman ini */}
+            {/* Inject CSS Glitch tadi ke dalam halaman ini */}
             <style>{customStyles}</style>
 
             {/* Background Grid Effect biar makin cyber */}
@@ -158,9 +158,9 @@ export default function MyBookings() {
 
                                 <div className="w-full md:w-40 h-28 bg-black rounded-lg overflow-hidden flex-shrink-0 border border-gray-700 group-hover:border-neon transition shadow-inner relative">
                                     <div className="absolute inset-0 bg-neon/20 mix-blend-overlay z-10 opacity-0 group-hover:opacity-100 transition"></div>
-                                    <img 
-                                        src={`${baseUrl}/storage/${rental.car?.image}`} 
-                                        alt="Car" 
+                                    <img
+                                        src={`${baseUrl}/storage/${rental.car?.image}`}
+                                        alt="Car"
                                         className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0"
                                         onError={(e) => { e.target.src = "https://via.placeholder.com/150x100?text=No+Image"; }}
                                     />
@@ -189,7 +189,7 @@ export default function MyBookings() {
 
                                     {/* 👇👇👇 TOMBOL GLITCH PECAH ADA DI SINI 👇👇👇 */}
                                     {rental.status === 'pending' && (
-                                        <button 
+                                        <button
                                             onClick={() => handleCancel(rental.id)}
                                             // Pakai class custom 'cyber-glitch-btn' dan data-text untuk efek bayangan
                                             className="cyber-glitch-btn px-6 py-3 rounded-sm w-full md:w-auto text-sm"

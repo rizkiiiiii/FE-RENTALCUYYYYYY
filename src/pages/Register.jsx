@@ -1,17 +1,22 @@
 import React, { useState, useContext } from "react";
-import api from "../../api/axios";
+import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
-function Registers() {
+function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [avatar, setAvatar] = useState(null); // New: Avatar State
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const handleFileChange = (e) => {
+        setAvatar(e.target.files[0]);
+    }
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -19,35 +24,45 @@ function Registers() {
         setLoading(true);
 
         try {
+            // Gunakan FormData untuk upload file
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('password', password);
+            if (avatar) {
+                formData.append('avatar', avatar);
+            }
+
             // 1. Register ke backend
-            const res = await api.post("/register", {
-                name,
-                email,
-                password,
+            const res = await api.post("/register", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
             });
 
             const token = res.data.token;
 
-            // 2. Simpan token
-            sessionStorage.setItem("token", token);
+            // 2. Simpan token ke localStorage
+            localStorage.setItem("token", token);
 
-            // 3. Auto-login menggunakan context
-            await login(email, password);
+            // 3. Auto-login (Update Context)
+            // Kita panggil endpoint /user lagi atau manfaatkan data dari response register
+            // tapi method login() di context butuh validasi ulang standar, 
+            // jadi paling aman kita set manual atau redirect login. 
+            // Namun karena AuthContext.jsx method login() minta email/pass, kita bisa bypass 
+            // dengan mereload window atau memodifikasi context.
+            // Sederhananya, kita pakai login() biasa kalau backend support.
 
-            // 4. Redirect setelah sukses
-            navigate("/cars");
+            // Opsi: Langsung redirect ke login page atau paksa reload
+            // Tapi UX yang bagus adalah langsung masuk.
+            // Karena AuthContext.login() melakukan POST login ulang, kita bisa skip itu 
+            // dan langsung reload halaman agar Context mengambil token dari localStorage.
+
+            window.location.href = '/cars';
 
         } catch (err) {
             setLoading(false);
-
-            const validationErrors = err.response?.data?.errors;
-
-            if (validationErrors) {
-                const firstError = Object.values(validationErrors)[0][0];
-                setError(firstError);
-            } else {
-                setError(err.response?.data?.message || "Registration Failed");
-            }
+            console.error(err);
+            const msg = err.response?.data?.message || "Registration Failed";
+            setError(msg);
         }
     };
 
@@ -105,6 +120,16 @@ function Registers() {
                         />
                     </div>
 
+                    <div>
+                        <label className="block text-gray-400 text-xs uppercase font-bold mb-2">Profile Picture (Optional)</label>
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="w-full bg-black/50 border border-gray-700 rounded-lg p-3 text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-gray-800 file:text-neon hover:file:bg-gray-700"
+                            accept="image/*"
+                        />
+                    </div>
+
                     <button
                         type="submit"
                         disabled={loading}
@@ -126,4 +151,4 @@ function Registers() {
     );
 }
 
-export default Registers;
+export default Register;
